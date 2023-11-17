@@ -16,8 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\TaskController;
 
+Route::resource('task',TaskController::class);
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('task/list', [TaskController::class, 'list']);
