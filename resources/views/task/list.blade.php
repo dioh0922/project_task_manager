@@ -4,6 +4,11 @@
     </header>
     <html>
     <body>
+        <div>
+            <button>
+                <a href='task/create'>新規登録</a>
+            </button>
+        </div>
         <table @style([
             'margin: auto',
         ])>

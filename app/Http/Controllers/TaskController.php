@@ -16,7 +16,6 @@ class TaskController extends Controller
     {
         return view('task.list', [
             'list' => Task::all(),
-            'title' => 'title test',
             'title' => 'タスク一覧'
         ]);
     }
@@ -26,7 +25,9 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        return view ('task.create', [
+            'title' => '新規作成'
+        ]);
     }
 
     /**
@@ -34,7 +35,16 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $task = Task::create([
+            'summary' => $request->summary, 
+            'detail' => $request->detail, 
+            'reference' => $request->reference
+        ]);
+        if($task != null){
+            return redirect('task');
+        }else{
+            throw new Exception('faild create task');
+        }
     }
 
     /**
