@@ -73,6 +73,9 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+
+        Task::where('id', $id)->update(['is_delete' => 1]);
+        return redirect('task');
+
     }
 }

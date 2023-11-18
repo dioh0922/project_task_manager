@@ -20,9 +20,14 @@
                     <td>{{$task["summary"]}}</td>
                     <td>{{$task["created_at"]}}</td>
                     <td>
-                        <button onclick="location.href='task/{{$task['id']}}'">
-                            詳細
-                        </button>
+                        @if($task["is_delete"] === 1)
+                            <div>完了済</div>
+                        @endif
+                        <div>
+                            <button onclick="location.href='task/{{$task['id']}}'">
+                                詳細
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
