@@ -89,7 +89,7 @@ class TaskController extends Controller
     public function destroy(string $id)
     {
 
-        Task::where('id', $id)->update(['is_delete' => 1]);
+        Task::where('id', $id)->update(['is_delete' => 1, 'closed_at' => now()]);
         return redirect('task');
 
     }
