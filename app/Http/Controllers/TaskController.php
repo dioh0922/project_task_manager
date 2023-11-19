@@ -75,9 +75,17 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        Task::where('id', $id)->update([
+        $task = Task::where('id', $id)->first();
+        $comment = $task->comment;
+        $comment .= $request->comment.now()."\n";
+
+        $reference = $task->reference;
+        $reference .= $request->reference."\n";
+
+        $task->update([
             'detail' => $request->detail, 
-            'reference' => $request->reference,
+            'reference' => $reference,
+            'comment' => $comment,
             'updated_at' => now()
         ]);
         return redirect('task');
