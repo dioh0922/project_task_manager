@@ -3,7 +3,9 @@
         @include('header')
         @include('back_to_list')
     </header>
-
+    <div>
+        @include('error')
+    </div>
     <div @style([
         'margin: auto',
     ])>
