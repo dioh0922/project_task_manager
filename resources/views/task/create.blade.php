@@ -10,6 +10,7 @@
         'margin: auto',
     ])>
         {{Form::open(['method' => 'POST', 'url' => 'task/'])}}
+        {{Form::token()}}
         {{Form::label('summary', 'タイトル')}}
         {{Form::text('summary', old('summary'), ['placeholder' => 'テーマの概要を入力'])}}
         {{Form::label('detail', '概要')}}
