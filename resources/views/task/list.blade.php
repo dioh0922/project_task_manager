@@ -5,8 +5,8 @@
     <html>
     <body>
         <div>
-            <button>
-                <a href='task/create'>新規登録</a>
+            <button onclick="location.href='task/create'">
+                新規登録
             </button>
         </div>
         <table @style([
