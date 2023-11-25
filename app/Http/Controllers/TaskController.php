@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use Illuminate\View\View;
 use App\Http\Requests\TaskDeleteRequest;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -25,9 +26,13 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return view ('task.create', [
-            'title' => '新規作成'
-        ]);
+        if(Auth::check()){
+            return view ('task.create', [
+                'title' => '新規作成',
+            ]);    
+        }else{
+            return redirect('login');
+        }
     }
 
     /**

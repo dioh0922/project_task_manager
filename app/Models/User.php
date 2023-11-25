@@ -12,15 +12,26 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    //既存のログインテーブルを使う
+    protected $table = 'login';
+    protected $primaryKey = 'userID';
+    //remember_tokenはないためfalse
+    protected $rememberTokenName = false;
+    //主キーは文字列のためauto_incはfalse
+    public $incrementing = false;
+
+    public function getAuthPassword(){
+        return $this->pass;
+    }
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'userID',
+        'pass'
     ];
 
     /**
@@ -29,8 +40,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'pass',
     ];
 
     /**
@@ -39,7 +49,6 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'pass' => 'hashed',
     ];
 }

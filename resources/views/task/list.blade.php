@@ -1,6 +1,7 @@
 <div>
     <header>
         @include('header')
+        @include('auth.logout')
     </header>
     <html>
     <body>
