@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\Reference;
+use App\Models\Comment;
 use Illuminate\View\View;
 use App\Http\Requests\TaskDeleteRequest;
 use Illuminate\Support\Facades\Auth;
@@ -46,10 +48,17 @@ class TaskController extends Controller
         $task = Task::create([
             'summary' => $request->summary, 
             'detail' => $request->detail, 
-            'reference' => $request->reference
         ]);
+
+
         if($task != null){
-            return redirect('task');
+            if(isset($request->reference)){
+                $reference = Reference::create([
+                    'task_id' => $task->id,
+                    'source' => $request->reference
+                ]);
+            }
+            return redirect('task/'.$task->id);
         }else{
             throw new Exception('faild create task');
         }
@@ -61,10 +70,12 @@ class TaskController extends Controller
     public function show(string $id)
     {
         $task = Task::find($id);
-        $task["detail"] = str_replace("\\n", "\n", $task["detail"]);
-        $task["detail"] = str_replace("\\r", "\r", $task["detail"]);
+        $comment = Comment::select('comment', 'updated_at')->where('task_id', $id)->get();
+        $reference = Reference::select('source', 'updated_at')->where('task_id', $id)->get();
         return view('task.detail',[
             'task' => $task,
+            'comment' => $comment,
+            'reference' => $reference,
             'title' => '詳細'
         ]);
 
@@ -84,19 +95,24 @@ class TaskController extends Controller
     public function update(Request $request, string $id)
     {
         $task = Task::where('id', $id)->first();
-        $comment = $task->comment;
-        $comment .= $request->comment.now()."\n";
-
-        $reference = $task->reference;
-        $reference .= $request->reference."\n";
 
         $task->update([
             'detail' => $request->detail, 
-            'reference' => $reference,
-            'comment' => $comment,
             'updated_at' => now()
         ]);
-        return redirect('task');
+        if(isset($request->comment)){
+            $comment = Comment::create([
+                'task_id' => $id,
+                'comment' => $request->comment,
+            ]);
+        }
+        if(isset($request->reference)){
+            $reference = Reference::create([
+                'task_id' => $id,
+                'source' => $request->reference
+            ]);
+        }
+        return redirect('task/'.$id);
     }
 
     /**
