@@ -10,7 +10,7 @@
     ])>
         <div>
             <div class='row'>    
-                <p>{{$task['summary']}}</p>
+                <h3>{{$task['summary']}}</h3>
             </div>
             @if($task["is_delete"] === 0)
                 {{Form::open(['method' => 'PUT', 'url' => 'task/'.$task['id']])}}
@@ -33,8 +33,8 @@
                         <div>
                             {{Form::label('comment', '検討メモ')}}
                             <ul>
-                                @foreach($comment as $content)
-                                    <li>{{$content['comment']}}：{{$content['updated_at']}}</li>
+                                @foreach($comment as $memo)
+                                    <li>{{$memo['comment']}}：{{$memo['updated_at']}}</li>
                                 @endforeach
                             <li>{{Form::text('comment', null, ['placeholder' => '検討内容を記入'])}}</li>
                             </ul>
@@ -46,13 +46,26 @@
                 </div>
                 {{Form::close()}}
             @else
-                <ul>
-                    <li>{{$task['summary']}}</li>
-                    <li>完了日：{{$task['closed_at']}}</li>
-                    <li>概要：{{$task['detail']}}</li>
-                    <li>参考</li>
-                    <li>{{$task['reference']}}</li>
-                </ul>
+                <div class='row'>
+                    <div class='col-6'>
+                        概要<br>
+                        <div @style([
+                            'white-space: pre-wrap',
+                            'word-wrap:break-word'
+                        ])>{{$task['detail']}}</div>
+                    </div>
+                    <div class='col-6'>
+                        参考<br>
+                        @foreach($reference as $source)
+                            {{$source['source']}}<br>
+                        @endforeach
+
+                        メモ<br>
+                        @foreach($comment as $memo)
+                            {{$memo['comment']}}：{{$memo['updated_at']}}<br>
+                        @endforeach
+                    </div>
+                </div>
             @endif
 
         @if($task["is_delete"] === 0)
