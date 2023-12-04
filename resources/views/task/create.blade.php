@@ -1,7 +1,6 @@
 <div>
     <header>
         @include('header')
-        @include('back_to_list')
     </header>
     <div>
         @include('error')
