@@ -1,18 +1,11 @@
 <div>
     <header>
         @include('header')
-        @include('auth.logout')
     </header>
     <html>
     <body>
-        <div>
-            <button onclick="location.href='task/create'">
-                新規登録
-            </button>
-        </div>
-        <table @style([
-            'margin: auto',
-        ])>
+
+        <table class='table w-75 mx-auto'>
             <thead>
                 <tr>
                     <th>タイトル</th>
@@ -30,7 +23,12 @@
                             <div>完了済</div>
                         @endif
                         <div>
-                            <button onclick="location.href='task/{{$task['id']}}'">
+                            <button onclick="location.href='task/{{$task['id']}}'" 
+                            @class([
+                                'btn',
+                                'btn-secondary' => $task['is_delete'],
+                                'btn-primary' => !$task['is_delete']
+                            ])>
                                 詳細
                             </button>
                         </div>
