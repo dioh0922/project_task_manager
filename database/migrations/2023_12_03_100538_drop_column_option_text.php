@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             $table->dropColumn('reference');
+        });
+        Schema::table('tasks', function (Blueprint $table) {
             $table->dropColumn('comment');
         });
     }
@@ -24,7 +26,10 @@ return new class extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             $table->string('reference')->nullable();
+        });
+        Schema::table('tasks', function (Blueprint $table) {
             $table->string('comment')->nullable();
         });
+
     }
 };
