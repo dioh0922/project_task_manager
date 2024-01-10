@@ -19,14 +19,14 @@ class LoginTest extends TestCase
         $response->assertSee('ログイン');
     }
 
-    public function test_logout(): void
+    public function test_logout_success(): void
     {
         $response = $this->get('/logout');
         $response->assertStatus(200);
         $response->assertSee('ログアウトしました');
     }
 
-    public function test_login(): void
+    public function test_login_success(): void
     {
         
         $data = [
@@ -55,5 +55,35 @@ class LoginTest extends TestCase
         $response = $this->get('login');
 
         $response->assertSee('ログイン情報が不正です');
+    }
+
+    public function test_login_faild_empty_id(): void
+    {
+        
+        $data = [
+            'userID' => '',
+            'password' => 'test_faild',
+        ];
+
+        $response = $this->postJson('/login', $data);
+
+        $response->assertStatus(422);
+
+        $response->assertSee('The user i d field is required');
+    }
+
+    public function test_login_faild_empty_pass(): void
+    {
+        
+        $data = [
+            'userID' => 'test_user',
+            'password' => '',
+        ];
+
+        $response = $this->postJson('/login', $data);
+
+        $response->assertStatus(422);
+
+        $response->assertSee('The password field is required.');
     }
 }
