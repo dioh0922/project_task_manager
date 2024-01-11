@@ -20,6 +20,8 @@ class User extends Authenticatable
     //主キーは文字列のためauto_incはfalse
     public $incrementing = false;
 
+    public $timestamps = false;
+
     public function getAuthPassword(){
         return $this->pass;
     }
