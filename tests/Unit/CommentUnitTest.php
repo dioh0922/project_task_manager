@@ -8,6 +8,14 @@ use Tests\TestCase;
 
 class CommentUnitTest extends TestCase
 {
+    public function test_load_table(): void
+    {
+        // 指定したテーブルに接続できているかテストする
+        $comment = Comment::find(1);
+        $this->assertEquals('test_comment', $comment->comment);
+        $this->assertEquals(1, $comment->task_id);
+    }
+    
     public function test_factoryable(): void
     {
         $this->assertEmpty(Comment::find(2));

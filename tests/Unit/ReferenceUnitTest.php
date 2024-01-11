@@ -8,6 +8,14 @@ use Tests\TestCase;
 
 class ReferenceUnitTest extends TestCase
 {
+    public function test_load_table(): void
+    {
+        // 指定したテーブルに接続できているかテストする
+        $reference = Reference::find(1);
+        $this->assertEquals('test_referemce', $reference->source);
+        $this->assertEquals(1, $reference->task_id);
+    }
+
     public function test_factoryable(): void
     {
         $this->assertEmpty(Reference::find(2));
