@@ -29,7 +29,7 @@ jobs:
     - name: Create Database
       run: |
         mkdir -p database
-        cp tests/testData/database_test.sqlite database/database.sqlite
+        touch database/database.sqlite
         php artisan migrate --seed --seeder=TestingDatabaseSeeder
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
