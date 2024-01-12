@@ -6,4 +6,5 @@
         @include('style_cdn')
     </head>
     @include('navbar')
+    @include('error')
 </div>

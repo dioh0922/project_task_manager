@@ -13,4 +13,9 @@ class Reference extends Model
         'source'
     ];
 
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
+    }
+
 }

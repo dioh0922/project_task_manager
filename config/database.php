@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Str;
-
+use Illuminate\Database\DBAL\TimestampType;
+ 
 return [
 
     /*
@@ -16,6 +17,13 @@ return [
     */
 
     'default' => env('DB_CONNECTION', 'mysql'),
+
+    'dbal' => [
+        'types' => [
+            'timestamp' => TimestampType::class,
+        ],
+    ],
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -91,6 +99,16 @@ return [
             'prefix_indexes' => true,
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+
+        // test DB
+        'testing_sqlite' => [
+            'driver' => 'sqlite',
+            'url' => env('DATABASE_URL'),
+            'database' => database_path('database_test.sqlite'), //作成したファイルのパスに変更
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
     ],
