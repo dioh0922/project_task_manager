@@ -66,12 +66,16 @@
                     <div class='col-6'>
                         参考<br>
                         @foreach($reference as $source)
-                            {{$source['source']}}<br>
+                            <div class='text-break mb-1 border-bottom border-secondary'>
+                                {{$source['source']}}
+                            </div>
                         @endforeach
 
                         メモ<br>
                         @foreach($comment as $memo)
-                            {{$memo['comment']}}：{{$memo['updated_at']}}<br>
+                            <div class='text-break mb-1 border-bottom border-secondary'>
+                                {{$memo['comment']}}：{{$memo['updated_at']}}
+                            </div>
                         @endforeach
                     </div>
                 </div>
