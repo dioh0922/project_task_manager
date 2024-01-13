@@ -69,15 +69,24 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        $task = Task::find($id);
-        $comment = Comment::select('comment', 'updated_at')->where('task_id', $id)->get();
-        $reference = Reference::select('source', 'updated_at')->where('task_id', $id)->get();
-        return view('task.detail',[
-            'task' => $task,
-            'comment' => $comment,
-            'reference' => $reference,
-            'title' => '詳細'
-        ]);
+        if(Auth::check()){
+    
+            $task = Task::find($id);
+            if($task == null){
+                return redirect('task')->withErrors('タスクが見つかりません:id='.$id);
+            }else{
+                $comment = Comment::select('comment', 'updated_at')->where('task_id', $id)->get();
+                $reference = Reference::select('source', 'updated_at')->where('task_id', $id)->get();
+                return view('task.detail',[
+                    'task' => $task,
+                    'comment' => $comment,
+                    'reference' => $reference,
+                    'title' => '詳細'
+                ]);
+            }
+        }else{
+            return redirect('login');
+        }
 
     }
 
