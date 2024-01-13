@@ -51,7 +51,16 @@ class TaskTest extends TestCase
         ];
         $response = $this->postJson('/task', $data);
         $response->assertStatus(302);
-        $response = $this->get('/task/3');
+
+        $user = User::factory()->create([
+            'userID' => 'test_create',
+            'pass' => 'test_pass',
+            'accept' => 1
+        ]);
+        $response = $this->actingAs($user)
+                         ->withSession(['banned' => false])
+                         ->get('/task/3');
+
         $response->assertStatus(200);
         $response->assertSee('test_create_summary');
         $response->assertSee('test_create_detail');
@@ -73,10 +82,44 @@ class TaskTest extends TestCase
 
     public function test_show_task_object(): void
     {
-        $response = $this->get('/task/1');
+
+        $user = User::factory()->create([
+            'userID' => 'test_create',
+            'pass' => 'test_pass',
+            'accept' => 1
+        ]);
+        $response = $this->actingAs($user)
+                         ->withSession(['banned' => false])
+                         ->get('/task/1');
 
         $response->assertStatus(200);
         $response->assertSee('test_task');
+    }
+
+    public function test_show_task_object_unauth(): void
+    {
+
+        $response = $this->get('/task/1');
+
+        $response->assertStatus(302)->assertRedirect('/login');
+
+    }
+
+    public function test_show_task_object_not_found(): void
+    {
+
+        $user = User::factory()->create([
+            'userID' => 'test_create',
+            'pass' => 'test_pass',
+            'accept' => 1
+        ]);
+        $response = $this->actingAs($user)
+                         ->withSession(['banned' => false])
+                         ->get('/task/99');
+
+        $response->assertStatus(302)->assertRedirect('/task');
+        $response = $this->get('/task');
+        $response->assertSee('タスクが見つかりません:id=99');
     }
 
     public function test_show_task_object_closed(): void
@@ -101,7 +144,15 @@ class TaskTest extends TestCase
         $response = $this->putJson('/task/1', $data);
         $response->assertStatus(302);
 
-        $response = $this->get('/task/1');
+        $user = User::factory()->create([
+            'userID' => 'test_create',
+            'pass' => 'test_pass',
+            'accept' => 1
+        ]);
+        $response = $this->actingAs($user)
+                         ->withSession(['banned' => false])
+                         ->get('/task/1');
+
 
         $response->assertSee('test_detail_edit');
         $response->assertSee('test_comment');
