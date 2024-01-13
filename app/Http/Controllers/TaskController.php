@@ -18,7 +18,7 @@ class TaskController extends Controller
     public function index()
     {
         return view('task.list', [
-            'list' => Task::all(),
+            'list' => Task::all()->sortBy('is_delete'),
             'title' => 'タスク一覧'
         ]);
     }
