@@ -9,6 +9,29 @@
         'justify-content-center'
     ])>
         <div>
+            <h6>親タスク</h6>
+            <ul>
+                @foreach($parent as $parent_task)
+                    <li>
+                        <a href="{{route('task.show', ['task' => $parent_task['base_task_id']])}}" >
+                            {{$parent_task['parent']['summary']}}：{{$parent_task['parent']['detail']}}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+
+            <h6>子タスク</h6>
+            <ul>
+                @foreach($child as $child_task)
+                    <li>
+                        <a href="{{route('task.show', ['task' => $child_task['child_task_id']])}}" >
+                            {{$child_task['child']['summary']}}
+                        </a>
+                    </li>
+                @endforeach
+
+            </ul>
+            
             <div class='row'>    
                 <h3>{{$task['summary']}}</h3>
             </div>

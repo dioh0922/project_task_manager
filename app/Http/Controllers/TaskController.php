@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\Reference;
 use App\Models\Comment;
+use App\Models\Relation;
 use Illuminate\View\View;
 use App\Http\Requests\TaskDeleteRequest;
 use Illuminate\Support\Facades\Auth;
@@ -75,10 +76,24 @@ class TaskController extends Controller
         }else if(Auth::check() || $task->is_delete == 1){
             $comment = Comment::select('comment', 'updated_at')->where('task_id', $id)->get();
             $reference = Reference::select('source', 'updated_at')->where('task_id', $id)->get();
+
+            $parent_list = Relation::select('*')
+                ->where('child_task_id', $id)
+                ->with('child')
+                ->with('parent')
+                ->get();
+
+            $child_list = Relation::select('*')
+                ->where('base_task_id', $id)
+                ->with('parent')
+                ->get();
+
             return view('task.detail',[
                 'task' => $task,
                 'comment' => $comment,
                 'reference' => $reference,
+                'parent' => $parent_list,
+                'child' => $child_list,
                 'title' => '詳細'
             ]);
         }else{
