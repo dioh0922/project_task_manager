@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Relation extends Model
 {
     use HasFactory;
-    
+
+    public $timestamps = false;
+    protected $fillable = [
+        'base_task_id',
+        'child_task_id'
+    ];
+
     // 別々のIDでリレーションする
     public function parent()
     {

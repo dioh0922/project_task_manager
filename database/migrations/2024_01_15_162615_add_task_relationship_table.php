@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('relations', function (Blueprint $table) {
-            $table->id();
 
             // それぞれのタスクIDは外部キー制約にしておく(登録済のみ)
             $table->unsignedBigInteger('base_task_id');
@@ -20,8 +19,6 @@ return new class extends Migration
             $table->unsignedBigInteger('child_task_id');
             $table->foreign('child_task_id')->references('id')->on('tasks');
 
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrentOnUpdate();
         });
     }
 
