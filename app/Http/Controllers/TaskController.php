@@ -32,7 +32,7 @@ class TaskController extends Controller
         if(Auth::check()){
             return view ('task.create', [
                 'title' => '新規作成',
-            ]);    
+            ]);
         }else{
             return redirect('login');
         }
@@ -47,12 +47,17 @@ class TaskController extends Controller
             'summary' => ['required', 'bail']
         ]);
         $task = Task::create([
-            'summary' => $request->summary, 
-            'detail' => $request->detail, 
+            'summary' => $request->summary,
+            'detail' => $request->detail,
         ]);
 
 
         if($task != null){
+            // 閉包テーブル用に自身の階層を記録しておく
+            $relation = Relation::create([
+                'base_task_id' => $task->id,
+                'child_task_id' => $task->id,
+            ]);
             if(isset($request->reference)){
                 $reference = Reference::create([
                     'task_id' => $task->id,
@@ -78,13 +83,19 @@ class TaskController extends Controller
             $reference = Reference::select('source', 'updated_at')->where('task_id', $id)->get();
 
             $parent_list = Relation::select('*')
-                ->where('child_task_id', $id)
+                ->where([
+                    ['child_task_id', '=', $id],
+                    ['base_task_id', '<>', $id],
+                ])
                 ->with('child')
                 ->with('parent')
                 ->get();
 
             $child_list = Relation::select('*')
-                ->where('base_task_id', $id)
+                ->where([
+                    ['child_task_id', '<>', $id],
+                    ['base_task_id', '=', $id],
+                ])
                 ->with('parent')
                 ->get();
 
@@ -119,7 +130,7 @@ class TaskController extends Controller
         $task = Task::where('id', $id)->first();
 
         $task->update([
-            'detail' => $request->detail, 
+            'detail' => $request->detail,
             'updated_at' => now()
         ]);
         if(isset($request->comment)){

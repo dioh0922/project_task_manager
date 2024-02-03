@@ -9,6 +9,7 @@
         'justify-content-center'
     ])>
         <div>
+            <button onclick="location.href = '{{route('relation.show', ['relation' => $task['id']])}}'">関係タスクの設定</button>
             <h6>親タスク</h6>
             <ul>
                 @foreach($parent as $parent_task)
@@ -31,8 +32,8 @@
                 @endforeach
 
             </ul>
-            
-            <div class='row'>    
+
+            <div class='row'>
                 <h3>{{$task['summary']}}</h3>
             </div>
             @if($task["is_delete"] === 0)
