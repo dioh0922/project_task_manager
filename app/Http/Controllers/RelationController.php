@@ -7,9 +7,45 @@ use App\Models\Task;
 use App\Models\Reference;
 use App\Models\Comment;
 use App\Models\Relation;
+use App\Http\Requests\RelationAddRequest;
+use App\Http\Requests\RelationDeleteRequest;
 
 class RelationController extends Controller
 {
+    private function create_closure_table(int $parent, int $child){
+        $ancestor_task = Relation::select(['base_task_id', 'task_depth'])->where([
+            ['child_task_id', '=', $child],
+            ['task_depth', '!=', 0]
+        ])->get();
+
+        // 子タスク以下の階層もすべて記録する
+        $descendants_task = Relation::select('child_task_id', 'task_depth')->where([
+            ['base_task_id', '=', $parent],
+        ])->orderBy('task_depth', 'asc')->get();
+
+        // 親にしているものの1つ下にする
+        $parent_depth = 1;
+        foreach($descendants_task as $descendant){
+            Relation::create([
+                'base_task_id' => $child,
+                'child_task_id' => $descendant->child_task_id,
+                'task_depth' => $parent_depth
+            ]);
+            $parent_depth += 1;
+        }
+
+        foreach($ancestor_task as $ancestor){
+            $depth_iter = $ancestor->task_depth;
+            foreach($descendants_task as $descendant){
+                $depth_iter += 1;
+                Relation::create([
+                    'base_task_id' => $ancestor->base_task_id,
+                    'child_task_id' => $descendant->child_task_id,
+                    'task_depth' => $depth_iter
+                ]);
+            }
+        }
+    }
     /**
      * Display a listing of the resource.
      */
@@ -29,9 +65,14 @@ class RelationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RelationAddRequest $request)
     {
-        //
+        if($request->target == '1'){
+            $this->create_closure_table($request->id, $request->parent);
+        }else{
+            $this->create_closure_table($request->parent, $request->id);
+        }
+        return redirect('relation/'.$request->id);
     }
 
     /**
@@ -39,7 +80,6 @@ class RelationController extends Controller
      */
     public function show(string $id)
     {
-        //
         // 関連テーブルには自身の階層も登録しているため、同じIDのデータは除外
         $parent_list = Relation::select('*')
             ->where('child_task_id', $id)
@@ -54,6 +94,24 @@ class RelationController extends Controller
             ->with('parent')
             ->get();
 
+        $parent = [
+            "relation_list" => $parent_list,
+            "target_list" => Task::select('id', 'summary')->whereNot('id', $id)->get()
+        ];
+
+        // 子タスクに設定されていない副問い合わせ
+        $sub = Relation::select('sub.id')
+        ->join('tasks as sub', 'id', '=', 'child_task_id')
+        ->where('base_task_id', $id)
+        ->whereColumn('sub.id',  'ext.id');
+        $child = [
+            "relation_list" => $child_list,
+            "target_list" => Task::from('tasks as ext')
+                ->select('ext.id', 'ext.summary')
+                ->whereNotExists($sub)
+                ->get()
+        ];
+
         // 関連テーブルで直接つながっていないタスクを選べるようにする
         $sub = Relation::select('tasks.id')->join('tasks', 'id', '=', 'base_task_id')
         ->where('child_task_id', $id)
@@ -61,10 +119,10 @@ class RelationController extends Controller
         $task = Task::from('tasks as raw')->select('raw.id as id', 'summary')->whereNotExists($sub)->get();
 
         return view ('relation.index', [
-            'target' => Task::find($id),
+            'base_task' => Task::find($id),
             'tasks' => $task,
-            'child' => $child_list,
-            'parent' => $parent_list,
+            'child' => $child,
+            'parent' => $parent,
             'title' => '関連追加',
         ]);
     }
@@ -80,9 +138,19 @@ class RelationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(RelationDeleteRequest $request, string $id)
     {
-        //
+        $descendant_task = Relation::select('*')->where([
+            ['base_task_id', '=', $id],
+            ['child_task_id', '!=', $id]
+        ])->get();
+        foreach($descendant_task as $descendant){
+            Relation::where([
+                ['base_task_id', $id],
+                ['child_task_id', $descendant->child_task_id]
+            ])->delete();
+        }
+        return redirect('relation/'.$id);
     }
 
     /**
