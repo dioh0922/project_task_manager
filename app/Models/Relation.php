@@ -12,7 +12,8 @@ class Relation extends Model
     public $timestamps = false;
     protected $fillable = [
         'base_task_id',
-        'child_task_id'
+        'child_task_id',
+        'task_depth'
     ];
 
     // 別々のIDでリレーションする
