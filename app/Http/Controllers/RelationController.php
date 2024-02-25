@@ -140,9 +140,9 @@ class RelationController extends Controller
      */
     public function update(RelationDeleteRequest $request, string $id)
     {
+        // 選んだタスクの子階層を取得する -> そこに含まれるchild_taskを消す
         $descendant_task = Relation::select('*')->where([
-            ['base_task_id', '=', $id],
-            ['child_task_id', '!=', $id]
+            ['base_task_id', '=', $request->child]
         ])->get();
         foreach($descendant_task as $descendant){
             Relation::where([
