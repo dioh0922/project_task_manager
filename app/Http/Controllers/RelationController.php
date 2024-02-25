@@ -88,10 +88,13 @@ class RelationController extends Controller
             ->with('parent')
             ->get();
 
+        // TODO: さらに下のタスクをツリーごとにまとめて取得するように
         $child_list = Relation::select('*')
+            ->where('task_depth', 1)
             ->where('base_task_id', $id)
             ->whereNot('child_task_id', $id)
             ->with('parent')
+            ->orderBy('child_task_id')
             ->get();
 
         $parent = [
