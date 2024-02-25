@@ -18,11 +18,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RelationController;
+use App\Http\Controllers\AnalysisController;
 
 Route::resources([
-    'task' => TaskController::class,
+    'task' => TaskController::class
 ]);
-Route::resource('relation', RelationController::class, ['only' => ['show', 'create', 'destroy']]);
+Route::resource('relation', RelationController::class, ['only' => ['show', 'store', 'update']]);
 Route::get('/', function () {
     return view('welcome');
 });
