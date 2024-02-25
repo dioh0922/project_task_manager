@@ -19,6 +19,9 @@ return new class extends Migration
             $table->unsignedBigInteger('child_task_id');
             $table->foreign('child_task_id')->references('id')->on('tasks');
 
+            //base_task_idから見たその下の深さ
+            $table->integer('task_depth')->nullable(false)->default(0);
+
         });
     }
 
