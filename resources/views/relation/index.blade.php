@@ -60,7 +60,7 @@
 
             @if(count($child["relation_list"]) > 0)
                 <div class="row">
-                    子タスク
+                    関連子タスク
                 </div>
                 @foreach($child["relation_list"] as $iter)
                     <div class="row">
