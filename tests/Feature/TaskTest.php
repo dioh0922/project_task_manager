@@ -57,9 +57,10 @@ class TaskTest extends TestCase
             'pass' => 'test_pass',
             'accept' => 1
         ]);
+        $id = 9;
         $response = $this->actingAs($user)
                          ->withSession(['banned' => false])
-                         ->get('/task/3');
+                         ->get('task/'.$id);
 
         $response->assertStatus(200);
         $response->assertSee('test_create_summary');
