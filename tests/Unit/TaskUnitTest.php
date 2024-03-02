@@ -12,14 +12,15 @@ class TaskUnitTest extends TestCase
     public function test_load_table(): void
     {
         $tasks = Task::find(1);
-        $this->assertEquals('test_task', $tasks->summary);   
+        $this->assertEquals('test_task', $tasks->summary);
     }
-    
+
     public function test_factory_able(): void
     {
-        $this->assertEmpty(Task::find(3));
+        // TODO: idの変数化 20240302
+        $this->assertEmpty(Task::find(9));
         Task::factory()->create();
-        $this->assertNotEmpty(Task::find(3));
+        $this->assertNotEmpty(Task::find(9));
     }
 
     public function test_relation_comment_table(): void
