@@ -9,6 +9,7 @@ use App\Models\Comment;
 use App\Models\Relation;
 use App\Http\Requests\RelationAddRequest;
 use App\Http\Requests\RelationDeleteRequest;
+use Illuminate\Support\Facades\Auth;
 
 class RelationController extends Controller
 {
@@ -67,12 +68,16 @@ class RelationController extends Controller
      */
     public function store(RelationAddRequest $request)
     {
-        if($request->target == '1'){
-            $this->create_closure_table($request->id, $request->parent);
+        if(Auth::check()){
+            if($request->target == '1'){
+                $this->create_closure_table($request->id, $request->parent);
+            }else{
+                $this->create_closure_table($request->parent, $request->id);
+            }
+            return redirect('relation/'.$request->id);
         }else{
-            $this->create_closure_table($request->parent, $request->id);
+            return redirect('login');
         }
-        return redirect('relation/'.$request->id);
     }
 
     /**
@@ -80,54 +85,58 @@ class RelationController extends Controller
      */
     public function show(string $id)
     {
-        // 関連テーブルには自身の階層も登録しているため、同じIDのデータは除外
-        $parent_list = Relation::select('*')
-            ->where('child_task_id', $id)
-            ->whereNot('base_task_id', $id)
-            ->with('child')
-            ->with('parent')
-            ->get();
+        if(Auth::check()){
+            // 関連テーブルには自身の階層も登録しているため、同じIDのデータは除外
+            $parent_list = Relation::select('*')
+                ->where('child_task_id', $id)
+                ->whereNot('base_task_id', $id)
+                ->with('child')
+                ->with('parent')
+                ->get();
 
-        // TODO: さらに下のタスクをツリーごとにまとめて取得するように
-        $child_list = Relation::select('*')
-            ->where('task_depth', 1)
+            // TODO: さらに下のタスクをツリーごとにまとめて取得するように
+            $child_list = Relation::select('*')
+                ->where('task_depth', 1)
+                ->where('base_task_id', $id)
+                ->whereNot('child_task_id', $id)
+                ->with('parent')
+                ->orderBy('child_task_id')
+                ->get();
+
+            $parent = [
+                "relation_list" => $parent_list,
+                "target_list" => Task::select('id', 'summary')->whereNot('id', $id)->get()
+            ];
+
+            // 子タスクに設定されていない副問い合わせ
+            $sub = Relation::select('sub.id')
+            ->join('tasks as sub', 'id', '=', 'child_task_id')
             ->where('base_task_id', $id)
-            ->whereNot('child_task_id', $id)
-            ->with('parent')
-            ->orderBy('child_task_id')
-            ->get();
+            ->whereColumn('sub.id',  'ext.id');
+            $child = [
+                "relation_list" => $child_list,
+                "target_list" => Task::from('tasks as ext')
+                    ->select('ext.id', 'ext.summary')
+                    ->whereNotExists($sub)
+                    ->get()
+            ];
 
-        $parent = [
-            "relation_list" => $parent_list,
-            "target_list" => Task::select('id', 'summary')->whereNot('id', $id)->get()
-        ];
+            // 関連テーブルで直接つながっていないタスクを選べるようにする
+            $sub = Relation::select('tasks.id')->join('tasks', 'id', '=', 'base_task_id')
+            ->where('child_task_id', $id)
+            ->whereRaw('raw.id = tasks.id');
+            $task = Task::from('tasks as raw')->select('raw.id as id', 'summary')->whereNotExists($sub)->get();
 
-        // 子タスクに設定されていない副問い合わせ
-        $sub = Relation::select('sub.id')
-        ->join('tasks as sub', 'id', '=', 'child_task_id')
-        ->where('base_task_id', $id)
-        ->whereColumn('sub.id',  'ext.id');
-        $child = [
-            "relation_list" => $child_list,
-            "target_list" => Task::from('tasks as ext')
-                ->select('ext.id', 'ext.summary')
-                ->whereNotExists($sub)
-                ->get()
-        ];
-
-        // 関連テーブルで直接つながっていないタスクを選べるようにする
-        $sub = Relation::select('tasks.id')->join('tasks', 'id', '=', 'base_task_id')
-        ->where('child_task_id', $id)
-        ->whereRaw('raw.id = tasks.id');
-        $task = Task::from('tasks as raw')->select('raw.id as id', 'summary')->whereNotExists($sub)->get();
-
-        return view ('relation.index', [
-            'base_task' => Task::find($id),
-            'tasks' => $task,
-            'child' => $child,
-            'parent' => $parent,
-            'title' => '関連追加',
-        ]);
+            return view ('relation.index', [
+                'base_task' => Task::find($id),
+                'tasks' => $task,
+                'child' => $child,
+                'parent' => $parent,
+                'title' => '関連追加',
+            ]);
+        }else{
+            return redirect('login');
+        }
     }
 
     /**
@@ -143,17 +152,21 @@ class RelationController extends Controller
      */
     public function update(RelationDeleteRequest $request, string $id)
     {
-        // 選んだタスクの子階層を取得する -> そこに含まれるchild_taskを消す
-        $descendant_task = Relation::select('*')->where([
-            ['base_task_id', '=', $request->child]
-        ])->get();
-        foreach($descendant_task as $descendant){
-            Relation::where([
-                ['base_task_id', $id],
-                ['child_task_id', $descendant->child_task_id]
-            ])->delete();
+        if(Auth::check()){
+            // 選んだタスクの子階層を取得する -> そこに含まれるchild_taskを消す
+            $descendant_task = Relation::select('*')->where([
+                ['base_task_id', '=', $request->child]
+            ])->get();
+            foreach($descendant_task as $descendant){
+                Relation::where([
+                    ['base_task_id', $id],
+                    ['child_task_id', $descendant->child_task_id]
+                ])->delete();
+            }
+            return redirect('relation/'.$id);
+        }else{
+            return redirect('login');
         }
-        return redirect('relation/'.$id);
     }
 
     /**
