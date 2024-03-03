@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RelationController;
-use App\Http\Controllers\AnalysisController;
 
 Route::resources([
     'task' => TaskController::class
