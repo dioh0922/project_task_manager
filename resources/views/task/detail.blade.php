@@ -8,30 +8,43 @@
         'align-items-center',
         'justify-content-center'
     ])>
-        <div>
-            <button onclick="location.href = '{{route('relation.show', ['relation' => $task['id']])}}'">関係タスクの設定</button>
-            <h6>親タスク</h6>
-            <ul>
-                @foreach($parent as $parent_task)
-                    <li>
-                        <a href="{{route('task.show', ['task' => $parent_task['base_task_id']])}}" >
-                            {{$parent_task['parent']['summary']}}：{{$parent_task['parent']['detail']}}
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
+        <div class="block">
+            <div class="form-check form-switch my-2 ml-2">
+                <input class="form-check-input"
+                data-bs-toggle="collapse"
+                data-bs-target="#relationCollapse"
+                aria-expanded="false"
+                aria-controls="relationCollapse"
+                id="toggle-relation" type="checkbox" role="switch" id="te">
+                <label class="form-check-label" for="te">関連</label>
+            </div>
+            <div class="collapse mt-3" id="relationCollapse">
+                <button class="btn btn-secondary my-2" onclick="location.href = '{{route('relation.show', ['relation' => $task['id']])}}'">
+                    関係タスクの設定
+                </button>
+                <h6>親タスク</h6>
+                <ul>
+                    @foreach($parent as $parent_task)
+                        <li>
+                            <a href="{{route('task.show', ['task' => $parent_task['base_task_id']])}}" >
+                                {{$parent_task['parent']['summary']}}：{{$parent_task['parent']['detail']}}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
 
-            <h6>子タスク</h6>
-            <ul>
-                @foreach($child as $child_task)
-                    <li>
-                        <a href="{{route('task.show', ['task' => $child_task['child_task_id']])}}" >
-                            {{$child_task['child']['summary']}}
-                        </a>
-                    </li>
-                @endforeach
+                <h6>子タスク</h6>
+                <ul>
+                    @foreach($child as $child_task)
+                        <li>
+                            <a href="{{route('task.show', ['task' => $child_task['child_task_id']])}}" >
+                                {{$child_task['child']['summary']}}
+                            </a>
+                        </li>
+                    @endforeach
 
-            </ul>
+                </ul>
+            </div>
 
             <div class='row'>
                 <h3>{{$task['summary']}}</h3>
