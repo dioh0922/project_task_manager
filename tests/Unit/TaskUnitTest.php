@@ -23,7 +23,8 @@ class TaskUnitTest extends TestCase
         $this->assertNotEmpty(Task::find(9));
     }
 
-    public function test_relation_comment_table(): void
+    /** Task->idに一意で紐付くもののテスト */
+    public function test_optional_comment_table(): void
     {
         $this->assertNotEmpty(Task::find(1));
         $tasks = Task::find(1);
@@ -37,7 +38,7 @@ class TaskUnitTest extends TestCase
         $this->assertEquals(2, count($tasks->refresh()->comments));
     }
 
-    public function test_relation_reference_table(): void
+    public function test_optional_reference_table(): void
     {
         $this->assertNotEmpty(Task::find(1));
         $tasks = Task::find(1);
