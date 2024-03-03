@@ -12,17 +12,19 @@ class TaskUnitTest extends TestCase
     public function test_load_table(): void
     {
         $tasks = Task::find(1);
-        $this->assertEquals('test_task', $tasks->summary);   
-    }
-    
-    public function test_factory_able(): void
-    {
-        $this->assertEmpty(Task::find(3));
-        Task::factory()->create();
-        $this->assertNotEmpty(Task::find(3));
+        $this->assertEquals('test_task', $tasks->summary);
     }
 
-    public function test_relation_comment_table(): void
+    public function test_factory_able(): void
+    {
+        // TODO: idの変数化 20240302
+        $this->assertEmpty(Task::find(9));
+        Task::factory()->create();
+        $this->assertNotEmpty(Task::find(9));
+    }
+
+    /** Task->idに一意で紐付くもののテスト */
+    public function test_optional_comment_table(): void
     {
         $this->assertNotEmpty(Task::find(1));
         $tasks = Task::find(1);
@@ -36,7 +38,7 @@ class TaskUnitTest extends TestCase
         $this->assertEquals(2, count($tasks->refresh()->comments));
     }
 
-    public function test_relation_reference_table(): void
+    public function test_optional_reference_table(): void
     {
         $this->assertNotEmpty(Task::find(1));
         $tasks = Task::find(1);

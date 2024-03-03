@@ -9,7 +9,31 @@
         'justify-content-center'
     ])>
         <div>
-            <div class='row'>    
+            <button onclick="location.href = '{{route('relation.show', ['relation' => $task['id']])}}'">関係タスクの設定</button>
+            <h6>親タスク</h6>
+            <ul>
+                @foreach($parent as $parent_task)
+                    <li>
+                        <a href="{{route('task.show', ['task' => $parent_task['base_task_id']])}}" >
+                            {{$parent_task['parent']['summary']}}：{{$parent_task['parent']['detail']}}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+
+            <h6>子タスク</h6>
+            <ul>
+                @foreach($child as $child_task)
+                    <li>
+                        <a href="{{route('task.show', ['task' => $child_task['child_task_id']])}}" >
+                            {{$child_task['child']['summary']}}
+                        </a>
+                    </li>
+                @endforeach
+
+            </ul>
+
+            <div class='row'>
                 <h3>{{$task['summary']}}</h3>
             </div>
             @if($task["is_delete"] === 0)
@@ -66,12 +90,16 @@
                     <div class='col-6'>
                         参考<br>
                         @foreach($reference as $source)
-                            {{$source['source']}}<br>
+                            <div class='text-break mb-1 border-bottom border-secondary'>
+                                {{$source['source']}}
+                            </div>
                         @endforeach
 
                         メモ<br>
                         @foreach($comment as $memo)
-                            {{$memo['comment']}}：{{$memo['updated_at']}}<br>
+                            <div class='text-break mb-1 border-bottom border-secondary'>
+                                {{$memo['comment']}}：{{$memo['updated_at']}}
+                            </div>
                         @endforeach
                     </div>
                 </div>

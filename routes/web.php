@@ -17,9 +17,12 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RelationController;
 
-Route::resource('task',TaskController::class);
-
+Route::resources([
+    'task' => TaskController::class
+]);
+Route::resource('relation', RelationController::class, ['only' => ['show', 'store', 'update']]);
 Route::get('/', function () {
     return view('welcome');
 });
