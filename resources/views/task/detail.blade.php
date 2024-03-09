@@ -8,42 +8,45 @@
         'align-items-center',
         'justify-content-center'
     ])>
-        <div class="block">
-            <div class="form-check form-switch my-2 ml-2">
-                <input class="form-check-input"
-                data-bs-toggle="collapse"
-                data-bs-target="#relationCollapse"
-                aria-expanded="false"
-                aria-controls="relationCollapse"
-                id="toggle-relation" type="checkbox" role="switch" id="te">
-                <label class="form-check-label" for="te">関連</label>
-            </div>
-            <div class="collapse mt-3" id="relationCollapse">
-                <button class="btn btn-secondary my-2" onclick="location.href = '{{route('relation.show', ['relation' => $task['id']])}}'">
-                    関係タスクの設定
-                </button>
-                <h6>親タスク</h6>
-                <ul>
-                    @foreach($parent as $parent_task)
-                        <li>
-                            <a href="{{route('task.show', ['task' => $parent_task['base_task_id']])}}" >
-                                {{$parent_task['parent']['summary']}}：{{$parent_task['parent']['detail']}}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-
-                <h6>子タスク</h6>
-                <ul>
-                    @foreach($child as $child_task)
-                        <li>
-                            <a href="{{route('task.show', ['task' => $child_task['child_task_id']])}}" >
-                                {{$child_task['child']['summary']}}
-                            </a>
-                        </li>
-                    @endforeach
-
-                </ul>
+        <div class="container">
+            <button type="button" class="btn btn-small btn-outline-danger mt-1" data-bs-toggle="modal" data-bs-target="#relationModal">関連しているもの</button>
+            <div class="modal fade" tabindex="-1" id="relationModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <button class="btn btn-secondary my-2" onclick="location.href = '{{route('relation.show', ['relation' => $task['id']])}}'">
+                                        関係タスクの設定
+                                    </button>
+                                </div>
+                                <div>
+                                    <p>親タスク</p>
+                                    <ul>
+                                        @foreach($parent as $parent_task)
+                                            <li>
+                                                <a href="{{route('task.show', ['task' => $parent_task['base_task_id']])}}" >
+                                                    {{$parent_task['parent']['summary']}}：{{$parent_task['parent']['detail']}}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <p>子タスク</p>
+                                <ul>
+                                    @foreach($child as $child_task)
+                                        <li>
+                                            <a href="{{route('task.show', ['task' => $child_task['child_task_id']])}}" >
+                                                {{$child_task['child']['summary']}}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class='row'>
