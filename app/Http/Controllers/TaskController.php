@@ -11,6 +11,8 @@ use Illuminate\View\View;
 use App\Http\Requests\TaskDeleteRequest;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Database\Query\JoinClause;
+
 class TaskController extends Controller
 {
     /**
@@ -18,8 +20,15 @@ class TaskController extends Controller
      */
     public function index()
     {
+        $child = Relation::select('base_task_id')->where('task_depth', '<>', 0)->groupBy('base_task_id');
+        $list = Task::select('*')
+        ->leftJoinSub($child, 'child', function(JoinClause $join){
+            $join->on('tasks.id', '=', 'child.base_task_id');
+        })
+        ->get()
+        ->sortByDesc('created_at')->sortBy('is_delete');
         return view('task.list', [
-            'list' => Task::all()->sortByDesc('created_at')->sortBy('is_delete'),
+            'list' => $list,
             'title' => 'タスク一覧'
         ]);
     }
