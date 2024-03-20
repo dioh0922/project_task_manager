@@ -18,9 +18,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RelationController;
+use App\Http\Controllers\AnalyzeController;
 
 Route::resources([
-    'task' => TaskController::class
+    'task' => TaskController::class,
+    'analyze' => AnalyzeController::class
 ]);
 Route::resource('relation', RelationController::class, ['only' => ['show', 'store', 'update']]);
 Route::get('/', function () {
