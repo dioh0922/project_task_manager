@@ -21,10 +21,10 @@ use App\Http\Controllers\RelationController;
 use App\Http\Controllers\AnalyzeController;
 
 Route::resources([
-    'task' => TaskController::class,
-    'analyze' => AnalyzeController::class
+    'task' => TaskController::class
 ]);
 Route::resource('relation', RelationController::class, ['only' => ['show', 'store', 'update']]);
+Route::resource('analyze', AnalyzeController::class, ['only' => ['index', 'show']]);
 Route::get('/', function () {
     return view('welcome');
 });
