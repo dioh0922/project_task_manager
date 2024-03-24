@@ -29,6 +29,8 @@ class AnalyzeController extends Controller
         return view('analyze.index', [
             'title' => 'タスク分析',
             'tree' => $closure,
+            'target' => 0,
+            'task' => Task::select('*')->orderByDesc('id')->get(),
             'top' => '(*)'
         ]);
     }
@@ -54,6 +56,9 @@ class AnalyzeController extends Controller
      */
     public function show(string $id)
     {
+        if($id == 0){
+            return redirect('analyze');
+        }
 
         // 閉包テーブル内の親タスクを連結して階層文字列を取得する、階層文字列でソートしてツリー順に並べる
         $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id ORDER BY task_depth DESC separator "/") as dep'))
@@ -72,6 +77,8 @@ class AnalyzeController extends Controller
         return view('analyze.index', [
             'title' => 'タスク分析',
             'tree' => $list,
+            'target' => $id,
+            'task' => Task::select('*')->orderByDesc('id')->get(),
             'top' => $id
         ]);
 
