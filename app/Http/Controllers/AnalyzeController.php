@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Query\JoinClause;
 use App\Models\Relation;
 use App\Models\Task;
+use App\Http\Requests\AnalyzeRequest;
 
 class AnalyzeController extends Controller
 {
@@ -22,16 +23,13 @@ class AnalyzeController extends Controller
          ->orderBy('dep')
          ->get();
 
-        // TODO: 子タスクが終わっている/いないで切り替えるようにするには？
-
-
         // 階層文字列内の区切りごとにインデントしてグラフ表示
         return view('analyze.index', [
             'title' => 'タスク分析',
             'tree' => $closure,
             'target' => 0,
             'task' => Task::select('*')->orderByDesc('id')->get(),
-            'top' => '(*)'
+            'close' => 0
         ]);
     }
 
@@ -52,24 +50,33 @@ class AnalyzeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * マインドマップ画面の拡張
      */
-    public function show(string $id)
+    public function showAnalyze(AnalyzeRequest $request)
     {
-        if($id == 0){
+        if(empty($request->id)){
             return redirect('analyze');
         }
 
         // 閉包テーブル内の親タスクを連結して階層文字列を取得する、階層文字列でソートしてツリー順に並べる
-        $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id ORDER BY task_depth DESC separator "/") as dep'))
-        ->join('tasks', 'tasks.id', '=', 'relations.child_task_id')
-        ->groupBy('tasks.id');
+        if($request->close == '1'){
+            $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id ORDER BY task_depth DESC separator "/") as dep'))
+            ->join('tasks', 'tasks.id', '=', 'relations.child_task_id')
+            ->groupBy('tasks.id');
+        }else{
+            $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id ORDER BY task_depth DESC separator "/") as dep'))
+            ->join('tasks', 'tasks.id', '=', 'relations.child_task_id')
+            ->where('tasks.is_delete', 0)
+            ->groupBy('tasks.id');
+        }
+
+
         $list = Relation::from('relations as target')->select('*')
         ->leftJoinSub($closure, 'child', function(JoinClause $join){
             $join->on('target.child_task_id', '=', 'child.id');
         })
-        ->where('base_task_id', $id)
-        ->whereNot('id', $id)
+        ->where('base_task_id', $request->id)
+        ->whereNot('id', $request->id)
         ->orderBy('dep')
         ->get();
 
@@ -77,10 +84,17 @@ class AnalyzeController extends Controller
         return view('analyze.index', [
             'title' => 'タスク分析',
             'tree' => $list,
-            'target' => $id,
+            'target' => $request->id,
             'task' => Task::select('*')->orderByDesc('id')->get(),
-            'top' => $id
+            'close' => $request->close
         ]);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
 
     }
 

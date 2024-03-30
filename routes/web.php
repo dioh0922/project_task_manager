@@ -24,7 +24,8 @@ Route::resources([
     'task' => TaskController::class
 ]);
 Route::resource('relation', RelationController::class, ['only' => ['show', 'store', 'update']]);
-Route::resource('analyze', AnalyzeController::class, ['only' => ['index', 'show']]);
+Route::resource('analyze', AnalyzeController::class, ['only' => ['index']]);
+Route::post('/analyze', [AnalyzeController::class, 'showAnalyze'])->name('showAnalyze');
 Route::get('/', function () {
     return view('welcome');
 });
