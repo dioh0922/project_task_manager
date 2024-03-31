@@ -17,7 +17,7 @@ class AnalyzeController extends Controller
     public function index()
     {
         // 閉包テーブル内の親タスクを連結して階層文字列を取得する、階層文字列でソートしてツリー順に並べる
-         $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id order by task_depth DESC separator "/") as dep'))
+         $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id ORDER BY task_depth DESC separator "/") as dep'))
          ->join('tasks', 'tasks.id', '=', 'relations.child_task_id')
          ->groupBy('tasks.id')
          ->orderBy('dep')
@@ -66,11 +66,11 @@ class AnalyzeController extends Controller
 
         // 閉包テーブル内の親タスクを連結して階層文字列を取得する、階層文字列でソートしてツリー順に並べる
         if($request->close == '1'){
-            $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id order by task_depth DESC separator "/") as dep'))
+            $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id ORDER BY task_depth DESC separator "/") as dep'))
             ->join('tasks', 'tasks.id', '=', 'relations.child_task_id')
             ->groupBy('tasks.id');
         }else{
-            $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id order by task_depth DESC separator "/") as dep'))
+            $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id ORDER BY task_depth DESC separator "/") as dep'))
             ->join('tasks', 'tasks.id', '=', 'relations.child_task_id')
             ->where('tasks.is_delete', 0)
             ->groupBy('tasks.id');
