@@ -23,12 +23,18 @@ class AnalyzeController extends Controller
          ->orderBy('dep')
          ->get();
 
+         $count = Relation::select('base_task_id', DB::raw('count(*) as c_cnt'))->whereNot('task_depth', 0)->groupBy('base_task_id');
+         $task = Task::select('*')->joinSub($count, 'cnt', function(JoinClause $join){
+             $join->on('tasks.id', '=', 'cnt.base_task_id');
+         })
+         ->get();
+
         // 階層文字列内の区切りごとにインデントしてグラフ表示
         return view('analyze.index', [
             'title' => 'タスク分析',
             'tree' => $closure,
             'target' => 0,
-            'task' => Task::select('*')->orderByDesc('id')->get(),
+            'task' => $task,
             'close' => 0
         ]);
     }
@@ -70,7 +76,6 @@ class AnalyzeController extends Controller
             ->groupBy('tasks.id');
         }
 
-
         $list = Relation::from('relations as target')->select('*')
         ->leftJoinSub($closure, 'child', function(JoinClause $join){
             $join->on('target.child_task_id', '=', 'child.id');
@@ -80,12 +85,18 @@ class AnalyzeController extends Controller
         ->orderBy('dep')
         ->get();
 
+        $count = Relation::select('base_task_id', DB::raw('count(*) as c_cnt'))->whereNot('task_depth', 0)->groupBy('base_task_id');
+        $task = Task::select('*')->joinSub($count, 'cnt', function(JoinClause $join){
+            $join->on('tasks.id', '=', 'cnt.base_task_id');
+        })
+        ->get();
+
         // 階層文字列内の区切りごとにインデントしてグラフ表示
         return view('analyze.index', [
             'title' => 'タスク分析',
             'tree' => $list,
             'target' => $request->id,
-            'task' => Task::select('*')->orderByDesc('id')->get(),
+            'task' => $task,
             'close' => $request->close
         ]);
     }
