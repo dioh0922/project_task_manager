@@ -11,6 +11,20 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD:
+          MYSQL_DATABASE: laravel_ci
+          MYSQL_USER: root
+          MYSQL_PASSWORD:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+
+
     steps:
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
@@ -27,12 +41,12 @@ jobs:
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
     - name: Create Database
+      env:
+        DB_HOST: 127.0.0.1
       run: |
         mkdir -p database
-        touch database/database.sqlite
         php artisan migrate --seed --seeder=TestingDatabaseSeeder
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
+        DB_HOST: 127.0.0.1
       run: php artisan test
