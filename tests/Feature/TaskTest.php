@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Task;
 
 class TaskTest extends TestCase
 {
@@ -57,7 +58,7 @@ class TaskTest extends TestCase
             'pass' => 'test_pass',
             'accept' => 1
         ]);
-        $id = 9;
+        $id = Task::max('id'); //最新の採番からとる
         $response = $this->actingAs($user)
                          ->withSession(['banned' => false])
                          ->get('task/'.$id);
