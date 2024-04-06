@@ -53,7 +53,7 @@
                     top((*))
                     @foreach($tree as $task)
                         @php
-                            echo preg_replace('/[0-9]*\//', "\t", $task['dep']).':'.$task['summary']."\n" /** エスケープは""で囲む  **/
+                            echo preg_replace('/[0-9]*\//', "\t", $task['dep']).':'.strtr($task['summary'], ['(' => '（', ')' => '）'])."\n" /** エスケープは""で囲む  **/
                         @endphp
                     @endforeach
             </pre>
