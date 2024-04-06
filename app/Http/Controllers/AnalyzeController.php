@@ -20,6 +20,7 @@ class AnalyzeController extends Controller
          $closure = Relation::select('tasks.id', 'tasks.summary', DB::raw('GROUP_CONCAT(base_task_id ORDER BY task_depth DESC separator "/") as dep'))
          ->join('tasks', 'tasks.id', '=', 'relations.child_task_id')
          ->groupBy('tasks.id')
+         ->groupBy('tasks.summary')
          ->orderBy('dep')
          ->get();
 
