@@ -52,7 +52,9 @@
                 mindmap
                     top((*))
                     @foreach($tree as $task)
-                        <? echo preg_replace('/[0-9]*\//', "\t", $task['dep'])."\n" /** エスケープは""で囲む  **/ ?>
+                        @php
+                            echo preg_replace('/[0-9]*\//', "\t", $task['dep'])."\n" /** エスケープは""で囲む  **/
+                        @endphp
                     @endforeach
             </pre>
         </div>
