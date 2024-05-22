@@ -26,6 +26,7 @@ Route::resources([
 Route::resource('relation', RelationController::class, ['only' => ['show', 'store', 'update']]);
 Route::resource('analyze', AnalyzeController::class, ['only' => ['index']]);
 Route::post('/analyze', [AnalyzeController::class, 'showAnalyze'])->name('showAnalyze');
+Route::get('/analyze/github', [AnalyzeController::class, 'github'])->name('github');
 Route::get('/', function () {
     return view('welcome');
 });
