@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Http;
 use App\Models\Relation;
 use App\Models\Task;
 use App\Http\Requests\AnalyzeRequest;
@@ -135,4 +136,29 @@ class AnalyzeController extends Controller
     {
         //
     }
+
+    /**
+     * Githubアカウントページ
+     */
+    public function github(){
+
+        $param = [
+            'query' => sprintf(
+                    "query{user(login:\"%s\"){contributionsCollection {contributionCalendar {weeks {contributionDays {contributionCount\ndate}}}}}}",
+                    config('app.github_user')
+                )
+        ];
+        $res = Http::withToken(config('app.github_token'))
+        ->post('https://api.github.com/graphql', $param);
+
+        if($res->successful()){
+            $user = $res->object()->data->user;
+            $weeks = $user->contributionsCollection->contributionCalendar->weeks;
+            return view('github.index', [
+                'title' => 'Githubアカウント',
+                'contribute' => $weeks
+            ]);
+        }
+    }
+
 }
