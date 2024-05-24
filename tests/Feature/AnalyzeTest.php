@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class AnalysisTest extends TestCase
+class AnalyzeTest extends TestCase
 {
     /**
      * A basic feature test example.
@@ -48,6 +48,16 @@ class AnalysisTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('タスク分析');
         $response->assertDontSee('checked');
+    }
+
+    public function test_show_github(): void
+    {
+
+        $response = $this->get('/analyze/github');
+
+        $response->assertStatus(200);
+        $response->assertSee('Githubアカウント');
+        $response->assertSee('x-axis');
     }
 
 
