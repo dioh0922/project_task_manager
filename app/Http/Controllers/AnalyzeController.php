@@ -154,9 +154,19 @@ class AnalyzeController extends Controller
         if($res->successful()){
             $user = $res->object()->data->user;
             $weeks = $user->contributionsCollection->contributionCalendar->weeks;
+            $day_list = [];
+            $cnt_list = [];
+            foreach($weeks as $days){
+                foreach($days->contributionDays as $item){
+                    $day_list[] = $item->date;
+                    $cnt_list[] = $item->contributionCount;
+                }
+            }
             return view('github.index', [
                 'title' => 'Githubアカウント',
-                'contribute' => $weeks
+                'contribute' => $weeks,
+                'day' => $day_list,
+                'cnt' => $cnt_list
             ]);
         }
     }
