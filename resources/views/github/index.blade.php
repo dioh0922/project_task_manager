@@ -15,14 +15,17 @@
             ---
             config:
                 xyChart:
-                    width: 1000
-                    height: 400
+                    width: 1500
+                    height: 500
+                    xAxis:
+                        showLabel: false
+                        showTick: false
                 themeVariables:
                     xyChart:
                         titleColor: "#ff0000"
             ---
             xychart-beta
-                title "Github活動"
+                title "Github活動：{{$day[0]}}～{{end($day)}}"
                 x-axis [{{implode(',', $day)}}]
                 bar [{{implode(',', $cnt)}}]
                 line [{{implode(',', $cnt)}}]
