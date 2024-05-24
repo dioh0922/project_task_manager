@@ -156,18 +156,22 @@ class AnalyzeController extends Controller
             $weeks = $user->contributionsCollection->contributionCalendar->weeks;
             $day_list = [];
             $cnt_list = [];
+            // TODO: 成形方法の検討
             foreach($weeks as $days){
                 foreach($days->contributionDays as $item){
                     $day_list[] = $item->date;
                     $cnt_list[] = $item->contributionCount;
                 }
             }
+            // TODO: mermaidのxychartは試験実装のため、別の表示も検討
             return view('github.index', [
                 'title' => 'Githubアカウント',
                 'contribute' => $weeks,
                 'day' => $day_list,
                 'cnt' => $cnt_list
             ]);
+        }else{
+            throw new \Exception($res->status().':'.$res->object()->message);
         }
     }
 
