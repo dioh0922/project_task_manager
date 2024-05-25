@@ -185,4 +185,7 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'github_token' => env('GITHUB_API_TOKEN'),
+    'github_user' => env('GITHUB_API_USER'),
+
 ];
